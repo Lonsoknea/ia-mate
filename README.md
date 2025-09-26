@@ -1,11 +1,17 @@
 # IA MATE
 
-Monorepo for the IA MATE project.
+IA MATE is an AI-assisted web app that generates Information Architecture (IA) ideas and diagrams from short user descriptions.
 
-- `frontend/`: Front-end application.
-- `backend/`: Back-end services.
+## Tech stack
+- Frontend: React (Vite) + TailwindCSS + react-flow
+- Backend: Node.js + Express
+- AI: OpenAI (ChatGPT API)
+- Version control: GitHub
 
-## Getting Started
-- Ensure you have Git installed.
-- This repository is initialized with `main` as the default branch.
+## Quick start (placeholders)
+1. Clone repo.
+2. Add environment variables (see `.env.example` ).
+3. Start backend: `cd backend && npm install && npm run dev` 
+4. Start frontend: `cd frontend && npm install && npm run dev` 
 
+(See SPECIFICATION.md and TODO.md for full details.)

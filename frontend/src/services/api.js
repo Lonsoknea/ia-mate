@@ -46,6 +46,16 @@ export async function getDiagram(structure, layout, type) {
   }
 }
 
+export async function saveStructure(structure) {
+  try {
+    // Temporarily reuse /api/generate as a persistence endpoint
+    const resp = await api.post('/api/generate', { structure })
+    return unwrap(resp)
+  } catch (e) {
+    throw normalizeError(e)
+  }
+}
+
 // Legacy helpers kept for compatibility with earlier components (if any)
 export async function analyzeDescription(description) {
   try {

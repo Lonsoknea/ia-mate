@@ -17,9 +17,39 @@ function normalizeError(error) {
   return new Error(message)
 }
 
+// New helpers per spec
+export async function analyzeIdea(idea, requestedType) {
+  try {
+    const resp = await api.post('/api/analyze', { idea, requestedType })
+    return unwrap(resp)
+  } catch (e) {
+    throw normalizeError(e)
+  }
+}
+
+export async function generateStructure(analysis) {
+  try {
+    // Forward the analyzer JSON to generator
+    const resp = await api.post('/api/generate', { analysis })
+    return unwrap(resp)
+  } catch (e) {
+    throw normalizeError(e)
+  }
+}
+
+export async function getDiagram(structure, layout, type) {
+  try {
+    const resp = await api.post('/api/diagram', { structure, layout, iaType: type })
+    return unwrap(resp)
+  } catch (e) {
+    throw normalizeError(e)
+  }
+}
+
+// Legacy helpers kept for compatibility with earlier components (if any)
 export async function analyzeDescription(description) {
   try {
-    const resp = await api.post('/api/analyze', { description })
+    const resp = await api.post('/api/analyze', { idea: description })
     return unwrap(resp)
   } catch (e) {
     throw normalizeError(e)

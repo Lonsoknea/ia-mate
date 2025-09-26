@@ -1,10 +1,9 @@
 import React from 'react'
 
-export default function IAOutline({ analysis, onAccept }) {
+export default function IAOutline({ analysis, onGenerate, loading }) {
   const pretty = (() => {
     try {
       if (typeof analysis === 'string') {
-        // try to detect JSON-like string
         const trimmed = analysis.trim()
         if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
           return JSON.stringify(JSON.parse(trimmed), null, 2)
@@ -21,8 +20,10 @@ export default function IAOutline({ analysis, onAccept }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">IA Outline</h2>
-        {onAccept && (
-          <button className="btn" onClick={onAccept}>Accept</button>
+        {onGenerate && (
+          <button className="btn" onClick={onGenerate} disabled={loading}>
+            {loading ? 'Generating...' : 'Generate Structure'}
+          </button>
         )}
       </div>
       <pre className="whitespace-pre-wrap break-words rounded-md bg-gray-50 p-3 text-sm border border-gray-200 overflow-auto max-h-96">

@@ -2,12 +2,51 @@ import React, { useState } from 'react'
 import InputForm from './components/InputForm.jsx'
 import IAOutline from './components/IAOutline.jsx'
 import IADiagram from './components/IADiagram.jsx'
+import { analyzeIdea, generateStructure, getDiagram } from './services/api'
 
 export default function App() {
-  const [description, setDescription] = useState('')
+  const [idea, setIdea] = useState('')
   const [iaType, setIaType] = useState('Tree')
-  const [analysis, setAnalysis] = useState(null) // string or JSON
-  const [diagramJson, setDiagramJson] = useState(null) // { nodes, edges } or string
+  const [analysis, setAnalysis] = useState(null)
+  const [structure, setStructure] = useState(null)
+  const [diagramJson, setDiagramJson] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function onAnalyze() {
+    setError('')
+    setLoading(true)
+    setStructure(null)
+    setDiagramJson(null)
+    try {
+      const res = await analyzeIdea(idea, iaType)
+      // Expect { analysis: {...} }
+      setAnalysis(res.analysis || res.result || res)
+    } catch (e) {
+      setError(e?.message || 'Failed to analyze idea')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function onGenerateStructure() {
+    setError('')
+    setLoading(true)
+    try {
+      const res = await generateStructure(analysis)
+      // Expect { structure: {...} } or { structure: [...] }
+      const s = res.structure || res.result || res
+      setStructure(s)
+
+      // Immediately get diagram
+      const dia = await getDiagram(s, undefined, iaType)
+      setDiagramJson(dia.nodes ? dia : dia.result || dia)
+    } catch (e) {
+      setError(e?.message || 'Failed to generate structure/diagram')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="container mx-auto max-w-6xl p-6 space-y-6">
@@ -17,23 +56,22 @@ export default function App() {
 
       <section className="card">
         <InputForm
-          description={description}
-          setDescription={setDescription}
+          description={idea}
+          setDescription={setIdea}
           iaType={iaType}
           setIaType={setIaType}
-          setAnalysis={setAnalysis}
-          setDiagramJson={setDiagramJson}
+          onAnalyze={onAnalyze}
+          loading={loading}
         />
+        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       </section>
 
       {analysis && (
         <section className="card">
           <IAOutline
             analysis={analysis}
-            onAccept={() => {
-              // When accepted, keep analysis visible and allow diagram panel below
-              // Actual diagram fetching is triggered in InputForm via dedicated button as well
-            }}
+            onGenerate={onGenerateStructure}
+            loading={loading}
           />
         </section>
       )}
